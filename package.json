@@ -1,0 +1,29 @@
+{
+  "name": "puppeteer-examples",
+  "version": "1.0.0",
+  "description": "This is a repo to create examples with Puppeteer",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codesandtags/puppeteer-examples.git"
+  },
+  "keywords": [
+    "Puppeteer",
+    "Puppeteer",
+    "examples"
+  ],
+  "author": "codesandtags@gmail.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/codesandtags/puppeteer-examples/issues"
+  },
+  "homepage": "https://github.com/codesandtags/puppeteer-examples#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "puppeteer": "^5.2.1"
+  }
+}
