@@ -31,6 +31,11 @@ const searchKeyword = async (page, keyword) => {
         await inputSearch.focus();
         await page.keyboard.type(keyword);
         await page.keyboard.press(ENTER_KEY);
+
+        await page.waitFor('.search-filters-bar button.artdeco-button--2');
+        const peopleButton = await page.$('.search-filters-bar button.artdeco-button--2');
+
+        peopleButton && peopleButton.click();
     }
 
     await page.waitFor(3000);
@@ -41,7 +46,7 @@ const sendInvitations = async (page, keyword) => {
     const searchResults = await searchContainer.$$('.search-result__wrapper');
 
     if (searchResults) {
-        console.log(`🔎 Total results found in page ${searchResults.length} \n`);
+        console.log(`🔎 Total results found in page ${searchResults.length}`);
         let invitationsSent = 0;
         for (const searchResult of searchResults) {
             const nameSelector = await searchResult.$('.name.actor-name');
@@ -49,14 +54,13 @@ const sendInvitations = async (page, keyword) => {
             const roleSelector = await searchResult.$('.search-result__info p');
 
             const contactName = await page.evaluate(element => element.textContent, nameSelector);
-            const buttonText = await page.evaluate(element => element.textContent, buttonSelector);
+            const buttonText = buttonSelector && await page.evaluate(element => element.textContent, buttonSelector);
             const roleText = await page.evaluate(element => element.textContent, roleSelector);
 
-            if (roleText.toLowerCase().indexOf(keyword.toLowerCase()) !== -1 &&
-                buttonText.trim() === 'Conectar'
+            if (roleText.toLowerCase().indexOf(keyword.toLowerCase()) >= 0 &&
+                buttonText && buttonText.trim() === 'Conectar'
             ) {
                 await buttonSelector.click();
-                await page.waitFor(800);
                 const buttonConfirmSelector = await page.$('[aria-label="Enviar ahora"]');
 
                 if (buttonConfirmSelector) {
@@ -64,15 +68,30 @@ const sendInvitations = async (page, keyword) => {
                     await page.waitFor(500);
                 }
 
+                await page.waitFor(500);
                 console.log(`👨🏻‍💻 Inviting contact  ${contactName.trim()} (${roleText.trim()})`);
                 invitationsSent++;
             } else {
                 console.log(`🤯 ${contactName.trim()}, contact not matches with role (${roleText.trim()})`);
             }
         }
-        await page.waitFor(5000);
-        console.log(`📧 Total invitations sent ${invitationsSent} \n`);
+        console.log(`📧 Total invitations sent in this page ${invitationsSent}`);
+        return invitationsSent;
     }
+}
+
+const paginateAndSendInvitations = async (page, keyword) => {
+    const nextButton = await page.$('.artdeco-pagination__button--next');
+    let totalInvitationsSent = 0;
+
+    for (let currentPage = 1; currentPage <= process.env.LINKEDIN_PAGES_TO_SEARCH; currentPage++) {
+        console.log(`\n🔎 Searching in the page [${currentPage}]`);
+        totalInvitationsSent += await sendInvitations(page, keyword);
+        await nextButton.click();
+        await page.waitFor(3000);
+    }
+
+    console.log(`\n👌🏼 Okay, I just sent [${totalInvitationsSent}] invitations for new contacts!.`);
 }
 
 const linkedinAddContacts = async () => {
@@ -84,7 +103,7 @@ const linkedinAddContacts = async () => {
         await openWebPage(page);
         await signInUser(page);
         await searchKeyword(page, process.env.LINKEDIN_SEARCH_KEYWORD);
-        await sendInvitations(page, process.env.LINKEDIN_SEARCH_KEYWORD);
+        await paginateAndSendInvitations(page, process.env.LINKEDIN_SEARCH_KEYWORD);
     } catch (error) {
         console.log(`❌ Upssss there is an error with `, error);
         await page.close();
