@@ -38,7 +38,7 @@ const searchKeyword = async (page, keyword) => {
         peopleButton && peopleButton.click();
     }
 
-    await page.waitFor(3000);
+    await page.waitFor(4000);
 }
 
 const sendInvitations = async (page, keyword) => {
@@ -88,7 +88,7 @@ const paginateAndSendInvitations = async (page, keyword) => {
         console.log(`\n🔎 Searching in the page [${currentPage}]`);
         totalInvitationsSent += await sendInvitations(page, keyword);
         await nextButton.click();
-        await page.waitFor(3000);
+        await page.waitFor(4000);
     }
 
     console.log(`\n👌🏼 Okay, I just sent [${totalInvitationsSent}] invitations for new contacts!.`);
