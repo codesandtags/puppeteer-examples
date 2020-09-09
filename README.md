@@ -1,4 +1,4 @@
- Puppeteer examples
+# Puppeteer examples
 This is a repo to create examples with Puppeteer using Node.js
 
 
