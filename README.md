@@ -22,3 +22,6 @@ The `LINKEDIN_SEARCH_KEYWORD` variable represents the keyword to use. e.g. Front
 ```
 npm run start
 ```
+
+### Example
+![Example Linkedin](./img/example_linkedin.gif)
